@@ -37,27 +37,25 @@ router.get('/auth/google/callback', async (req, res) => {
     const { code } = req.query;
 
     try {
-        // Exchange authorization code for tokens
         const { tokens } = await oauth2Client.getToken(code);
 
         if (!tokens || !tokens.access_token) {
+            console.error('Failed to retrieve access token.');
             return res.status(401).json({ error: 'Failed to retrieve access token.' });
         }
 
-        // Store credentials and set the access token
         await setCredentials(tokens);
+        console.log('Tokens received:', tokens);
 
-        console.log('OAuth tokens received:', tokens);
-
-        // Store access token in cookies
+        // Set cookie with access token
         res.cookie('google_access_token', tokens.access_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 3600 * 1000,  // 1-hour expiry
+            sameSite: 'lax',
+            maxAge: 3600 * 1000,
         });
 
-        res.redirect('/dashboard');  // Redirect to a dashboard or success page
-
+        res.redirect('/dashboard');
     } catch (error) {
         console.error('OAuth callback error:', error);
         res.status(500).json({ error: 'Failed to authenticate with Google' });
