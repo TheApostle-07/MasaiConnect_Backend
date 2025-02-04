@@ -25,6 +25,7 @@ const generateToken = (user) => {
 
 // Middleware to verify JWT and attach user to request
 const authenticateToken = (req, res, next) => {
+     if (req.path === '/api/auth/google/callback') return next();
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized. Token is required.' });
