@@ -35,10 +35,10 @@ router.get('/auth/google', (req, res) => {
 
 router.get('/auth/google/callback', async (req, res) => {
     const { code } = req.query;
-
+    console.log("Code :",code)
     try {
         const { tokens } = await oauth2Client.getToken(code);
-
+         console.log("tokens :",tokens)
         if (!tokens || !tokens.access_token) {
             console.error('Failed to retrieve access token.');
             return res.status(401).json({ error: 'Failed to retrieve access token.' });
